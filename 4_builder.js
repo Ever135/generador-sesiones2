@@ -1,69 +1,72 @@
-// 4_builder.js
-  Document,
-  Packer
-} = require('docx');
-
-const fs = require('fs');
+const { Document, Packer } = require("docx");
+const fs = require("fs");
 
 const {
-  contenido
-} = require('./3_contenido');
+  infoTable,
+  propTable,
+  estrategiasTable,
+  momentosTable,
+  firmasTable,
+  MAIN,
+  TEAL,
+  h2,
+  sp,
+  mkBorder
+} = require("./3_contenido");
 
-// ─────────────────────────────────────
-// DOCUMENTO
-// ─────────────────────────────────────
-
+// ─────────────────────────────────────────────
+// DOCUMENTO PRINCIPAL
+// ─────────────────────────────────────────────
 const doc = new Document({
-
-  styles: {
-    default: {
-      document: {
-        run: {
-          font: 'Arial',
-          size: 20
-        }
-      }
-    }
-  },
-
   sections: [
     {
-      properties: {
-        page: {
-          margin: {
-            top: 900,
-            right: 900,
-            bottom: 900,
-            left: 900
-          }
-        }
-      },
+      properties: {},
+      children: [
 
-      children: contenido
-    }
-  ]
+        // PORTADA
+        h2("SESIÓN DE APRENDIZAJE N° 01-UA7", MAIN),
 
+        sp(40, 40),
+
+        // DATOS
+        h2("I. DATOS INFORMATIVOS", MAIN),
+        infoTable,
+
+        sp(80, 80),
+
+        // PROPÓSITOS
+        h2("II. PROPÓSITOS DE APRENDIZAJE", MAIN),
+        propTable,
+
+        sp(80, 80),
+
+        // ESTRATEGIAS
+        h2("III. ESTRATEGIAS DIDÁCTICAS", TEAL),
+        estrategiasTable,
+
+        sp(80, 80),
+
+        // MOMENTOS
+        h2("IV. MOMENTOS DE LA SESIÓN", MAIN),
+        momentosTable,
+
+        sp(100, 100),
+
+        // FIRMAS
+        firmasTable,
+      ],
+    },
+  ],
 });
 
-// ─────────────────────────────────────
-// EXPORTAR
-// ─────────────────────────────────────
+// ─────────────────────────────────────────────
+// GENERAR WORD
+// ─────────────────────────────────────────────
+Packer.toBuffer(doc).then((buffer) => {
+  fs.writeFileSync(
+    "Sesion_Logaritmos_5to_Secundaria.docx",
+    buffer
+  );
 
-Packer.toBuffer(doc)
-  .then(buffer => {
-
-    if (!fs.existsSync('./output')) {
-      fs.mkdirSync('./output');
-    }
-
-    fs.writeFileSync(
-      './output/Sesion_Logaritmos_5to_Secundaria.docx',
-      buffer
-    );
-
-    console.log('✅ Documento generado correctamente');
-
-  })
-  .catch(error => {
-    console.log(error);
-  });
+  console.log("Documento generado correctamente");
+});
